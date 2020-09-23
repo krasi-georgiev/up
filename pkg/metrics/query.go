@@ -75,7 +75,7 @@ func Query(
 			Start: time.Now().Add(-time.Duration(query.Duration)),
 			End:   time.Now(),
 			Step:  step,
-		})
+		}, query.Split.String())
 		if err != nil {
 			err = fmt.Errorf("querying: %w", err)
 			return warn, err

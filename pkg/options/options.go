@@ -31,6 +31,7 @@ type Options struct {
 	Token             auth.TokenProvider
 	Queries           []QuerySpec
 	Period            time.Duration
+	ReadSleep         time.Duration
 	Duration          time.Duration
 	Latency           time.Duration
 	InitialQueryDelay time.Duration
@@ -56,6 +57,7 @@ type QuerySpec struct {
 	Query    string         `yaml:"query"`
 	Duration model.Duration `yaml:"duration"`
 	Step     time.Duration  `yaml:"step"`
+	Split    time.Duration  `yaml:"split"`
 }
 
 type labelArg []prompb.Label

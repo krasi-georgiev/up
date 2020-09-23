@@ -32,7 +32,7 @@ func RegisterMetrics(reg *prometheus.Registry) Metrics {
 		CustomQueryExecuted: promauto.With(reg).NewCounterVec(prometheus.CounterOpts{
 			Name: "up_custom_query_executed_total",
 			Help: "The total number of custom specified queries executed.",
-		}, []string{"type", "query"}),
+		}, []string{"type", "query", "split"}),
 		CustomQueryErrors: promauto.With(reg).NewCounterVec(prometheus.CounterOpts{
 			Name: "up_custom_query_errors_total",
 			Help: "The total number of custom specified queries executed.",
@@ -40,7 +40,7 @@ func RegisterMetrics(reg *prometheus.Registry) Metrics {
 		CustomQueryLastDuration: promauto.With(reg).NewGaugeVec(prometheus.GaugeOpts{
 			Name: "up_custom_query_last_duration",
 			Help: "The duration of the query execution last time the query was executed successfully.",
-		}, []string{"type", "query"}),
+		}, []string{"type", "query", "split"}),
 	}
 
 	return m

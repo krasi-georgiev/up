@@ -34,8 +34,7 @@ import (
 )
 
 const (
-	numOfEndpoints        = 2
-	timeoutBetweenQueries = 100 * time.Millisecond
+	numOfEndpoints = 2
 
 	// Labels for query type.
 	labelQuery      = "query"
@@ -244,6 +243,7 @@ func addCustomQueryRunGroup(ctx context.Context, g *run.Group, l log.Logger, opt
 								"msg", "failed to execute specified query",
 								"type", queryType,
 								"name", q.Name,
+								"spit", q.Split.String(),
 								"duration", duration,
 								"warnings", fmt.Sprintf("%#+v", warn),
 								"err", err,
@@ -253,16 +253,17 @@ func addCustomQueryRunGroup(ctx context.Context, g *run.Group, l log.Logger, opt
 							level.Debug(l).Log("msg", "successfully executed specified query",
 								"type", queryType,
 								"name", q.Name,
+								"spit", q.Split,
 								"duration", duration,
 								"warnings", fmt.Sprintf("%#+v", warn),
 							)
-							m.CustomQueryLastDuration.WithLabelValues(queryType, q.Name).Set(duration)
+							m.CustomQueryLastDuration.WithLabelValues(queryType, q.Name, q.Split.String()).Set(duration)
 						}
-						m.CustomQueryExecuted.WithLabelValues(queryType, q.Name).Inc()
+						m.CustomQueryExecuted.WithLabelValues(queryType, q.Name, q.Split.String()).Inc()
 					}
-					time.Sleep(timeoutBetweenQueries)
+					time.Sleep(opts.ReadSleep)
 				}
-				time.Sleep(timeoutBetweenQueries)
+				time.Sleep(opts.ReadSleep)
 			}
 		}
 	}, func(_ error) {
@@ -377,6 +378,7 @@ func parseFlags(l log.Logger) (options.Options, error) {
 		"The file from which to read a bearer token to set in the authorization header on requests.")
 	flag.StringVar(&queriesFileName, "queries-file", "", "A file containing queries to run against the read endpoint.")
 	flag.DurationVar(&opts.Period, "period", 5*time.Second, "The time to wait between remote-write requests.")
+	flag.DurationVar(&opts.ReadSleep, "read-sleep", 100*time.Millisecond, "The time to wait between remote-read requests.")
 	flag.DurationVar(&opts.Duration, "duration", 5*time.Minute,
 		"The duration of the up command to run until it stops. If 0 it will not stop until the process is terminated.")
 	flag.Float64Var(&opts.SuccessThreshold, "threshold", 0.9, "The percentage of successful requests needed to succeed overall. 0 - 1.")
